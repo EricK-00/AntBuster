@@ -20,7 +20,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
@@ -1420,7 +1420,6 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      cannon_47: -603700257
       cannon_8: 2044176713
       cannon_48: 1734479537
       cannon_58: -679606866
@@ -1450,16 +1449,16 @@ TextureImporter:
       cannon_21: -27976724
       cannon_56: 2009113819
       cannon_0: -682152062
-      cannon_12: -109317248
       cannon_14: -1623957667
+      cannon_12: -109317248
       cannon_60: -2062687293
       cannon_20: 850914502
       cannon_37: 1548895446
       cannon_34: -98018378
       cannon_19: -319949651
       cannon_35: -1176901999
-      cannon_38: 647013875
       cannon_46: -1854169297
+      cannon_38: 647013875
       cannon_17: 814522835
       cannon_59: -382646950
       cannon_11: -649348900
@@ -1479,6 +1478,7 @@ TextureImporter:
       cannon_40: -395082822
       cannon_52: -1141433965
       cannon_18: 736408892
+      cannon_47: -603700257
       cannon_9: 1500095599
       cannon_4: 1780383759
   spritePackingTag: 
