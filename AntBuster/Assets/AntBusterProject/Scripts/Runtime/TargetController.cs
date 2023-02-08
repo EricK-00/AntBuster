@@ -13,6 +13,7 @@ public class TargetController : MonoBehaviour
     private Color color;
     private Color alphaZero;
 
+    private Coroutine currentCoroutine;
     private UnityEvent antDie;
 
     private void Awake()
@@ -24,7 +25,7 @@ public class TargetController : MonoBehaviour
         alphaZero = new Color(0, 0, 0, 0);
     }
 
-    public IEnumerator TargetObject(GameObject target)
+    private IEnumerator TargetObjectCoroutine(GameObject target)
     {
         image.color = color;
         Vector2 startPos = transform.position;
@@ -39,17 +40,29 @@ public class TargetController : MonoBehaviour
 
             t += 0.05f;
             yield return new WaitForSeconds(0.05f);
-
-            if (target.activeInHierarchy == false)
-            {
-                transform.parent = ObjCanvas.transform;
-                SetInvisible();
-                yield break;
-            }
         }
 
         transform.position = target.transform.position;
         transform.SetParent(target.transform);
+    }
+
+    private void OnDisable()
+    {
+        //transform.parent = ObjCanvas.transform;
+        SetInvisible();
+        if (currentCoroutine != null)
+        {
+            StopCoroutine(currentCoroutine);
+        }
+    }
+
+    public void TargetObject(GameObject target)
+    {
+        if (currentCoroutine != null)
+        {
+            StopCoroutine(currentCoroutine);
+        }
+        currentCoroutine = StartCoroutine(TargetObjectCoroutine(target));
     }
 
     private void SetInvisible()

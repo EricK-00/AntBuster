@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public static partial class Functions
 {
-    //! Æ¯Á¤ °ÔÀÓ¿ÀºêÁ§Æ®ÀÇ ÀÚ½ÄÀ» Å½»öÇØ¼­ Ã£´Â ¸Ş¼­µå
+    //! íŠ¹ì • ê²Œì„ì˜¤ë¸Œì íŠ¸ì˜ ìì‹ì„ íƒìƒ‰í•´ì„œ ì°¾ëŠ” ë©”ì„œë“œ
     //private static GameObject GetChildGameObject(this GameObject parentGO, string childName)
     //{
     //    for (int i = 0; i < parentGO.transform.childCount; i++)
@@ -20,7 +20,7 @@ public static partial class Functions
     //    return default;
     //}
 
-    //! Æ¯Á¤ °ÔÀÓ¿ÀºêÁ§Æ®ÀÇ ÀÚ½ÄµéÀ» Å½»öÇØ¼­ Ã£´Â ¸Ş¼­µå
+    //! íŠ¹ì • ê²Œì„ì˜¤ë¸Œì íŠ¸ì˜ ìì‹ë“¤ì„ íƒìƒ‰í•´ì„œ ì°¾ëŠ” ë©”ì„œë“œ
     public static GameObject FindChildGameObject(this GameObject parentGO, string childName)
     {
         GameObject searchTarget;
@@ -43,7 +43,7 @@ public static partial class Functions
         return null;
     }
 
-    //! ·çÆ® °ÔÀÓ¿ÀºêÁ§Æ®¸¦ Å½»öÇØ¼­ Ã£´Â ¸Ş¼­µå
+    //! ë£¨íŠ¸ ê²Œì„ì˜¤ë¸Œì íŠ¸ë¥¼ íƒìƒ‰í•´ì„œ ì°¾ëŠ” ë©”ì„œë“œ
     public static GameObject GetRootGameObject(string goName)
     {
         Scene activeScene = GetActiveScene();
@@ -63,5 +63,14 @@ public static partial class Functions
     public static Scene GetActiveScene()
     {
         return SceneManager.GetActiveScene();
+    }
+
+    public static void LookAtVector2(this Transform transform, Transform targetTransform, Vector2 forwardDirection)
+    {
+        Vector2 directionVector = (targetTransform.position - transform.position).normalized;
+        bool isLeft = Vector2.Dot(directionVector, Vector2.right) >= 0;
+        float angle = Vector2.Angle(forwardDirection, directionVector);
+
+        transform.rotation = isLeft ? Quaternion.Euler(0, 0, -angle) : Quaternion.Euler(0, 0, angle);
     }
 }

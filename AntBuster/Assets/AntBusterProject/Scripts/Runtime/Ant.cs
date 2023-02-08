@@ -1,4 +1,5 @@
 using Mono.Cecil;
+using Unity.VisualScripting;
 using UnityEditor.U2D.Sprites;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,10 +12,11 @@ interface ITargetable
 
 public class Ant : MonoBehaviour, ITargetable
 {
-    public string Description { get; private set; } = "Ant";
+    public string Description { get; private set; }
 
     private GameObject objCanvasGO;
-    private Vector2 startPos;
+
+    private RectTransform antCaveRect;
     private RectTransform cakeRect;
     private Image EnergeImage;
     private GameObject antCake;
@@ -25,13 +27,16 @@ public class Ant : MonoBehaviour, ITargetable
 
     private float t = 0;
 
-    public float speed = 0.12f;
+    private float speed = 0.12f;
 
     private bool isIncreased = true;
+
+    private bool isCake = false;
 
     private void Awake()
     {
         objCanvasGO = Functions.GetRootGameObject(Functions.NAME_OBJCANVAS);
+        antCaveRect = objCanvasGO.FindChildGameObject(Functions.NAME_ANTCAVE).GetComponent<RectTransform>();
         cakeRect = objCanvasGO.FindChildGameObject(Functions.NAME_CAKE).GetComponent<RectTransform>();
 
         EnergeImage = gameObject.FindChildGameObject(Functions.NAME_ANT_HP).GetComponent<Image>();
@@ -43,33 +48,30 @@ public class Ant : MonoBehaviour, ITargetable
         Initialize();
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        startPos = GetComponent<RectTransform>().position;
-
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        transform.position = Vector2.Lerp(startPos, cakeRect.position, t);
+        transform.position = Vector2.Lerp(antCaveRect.position, cakeRect.position, t);
         t += (isIncreased ? Time.deltaTime : -Time.deltaTime) * speed;
 
         if (t >= 1)
         {
             isIncreased = false;
-            antCake.SetActive(true);
+            transform.LookAtVector2(antCaveRect.transform, Vector2.up);
+
+            if (!isCake && GameManager.Instance.TryCarryCake())
+            {
+                antCake.SetActive(true);
+                isCake = true;
+                speed = 0.1f;
+            }
         }
         else if (t <= 0)
         {
-            isIncreased = true;
-            antCake.SetActive(false);
-        }
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            Damaged(1);
+            if (isCake)
+            {
+                GameManager.Instance.EatCake();
+            }
+            Initialize();
         }
     }
 
@@ -78,11 +80,6 @@ public class Ant : MonoBehaviour, ITargetable
         Description = $"Level {level}\n\nEnerge: {currentEnerge}/{maxEnerge}\nSpeed: {speed * 10}inch/sec";
         UIManager.Instance.PrintDesc(Description);
         UIManager.Instance.Target(gameObject);
-    }
-
-    private void UpdateHPImage()
-    {
-        EnergeImage.fillAmount = (float)currentEnerge / maxEnerge;
     }
 
     public void Damaged(int damage)
@@ -94,24 +91,46 @@ public class Ant : MonoBehaviour, ITargetable
         UpdateHPImage();
         if (currentEnerge <= 0)
         {
+            if (isCake)
+            {
+                GameManager.Instance.ReturnCake();
+            }
+
             currentEnerge = 0;
             speed = 0;
+            antCake.SetActive(false);
             GetComponent<Animator>().SetTrigger("isDead");
         }
     }
 
     public void Die()
     {
-        gameObject.SetActive(false);
         transform.parent.GetComponent<AntGenerator>().Respone(gameObject);
+        gameObject.SetActive(false);
     }
 
     private void Initialize()
     {
         t = 0;
         isIncreased = true;
+        transform.LookAtVector2(cakeRect.transform, Vector2.up);
         currentEnerge = maxEnerge;
         UpdateHPImage();
         speed = 0.12f;
+        antCake.SetActive(false);
+        isCake = false;
+    }
+
+    private void UpdateHPImage()
+    {
+        EnergeImage.fillAmount = (float)currentEnerge / maxEnerge;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == Functions.TAG_BULLET)
+        {
+            Damaged(collision.gameObject.GetComponent<Bullet>().Power);
+        }
     }
 }

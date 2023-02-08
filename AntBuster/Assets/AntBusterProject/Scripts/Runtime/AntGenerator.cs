@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Rendering;
@@ -47,9 +48,24 @@ public class AntGenerator : MonoBehaviour
             antList.Add(antInst);
             antInst.name = $"Ant{i + 1}";
             antInst.GetComponent<RectTransform>().position = antCaveRect.position;
+            antInst.SetActive(false);
 
+        }
+
+        TMP_Text startCounter = antCaveRect.GetChild(0).gameObject.GetComponent<TMP_Text>();
+        for (int i = 5; i > 0; i--)
+        {
+            startCounter.text = i.ToSafeString();
             yield return new WaitForSeconds(1f);
         }
+        startCounter.gameObject.SetActive(false);
+
+        foreach (var antInst in antList)
+        {
+            antInst.SetActive(true);
+            yield return new WaitForSeconds(1f);
+        }
+
     }
 
     private IEnumerator ResponeCoroutine(GameObject sender)
@@ -59,9 +75,9 @@ public class AntGenerator : MonoBehaviour
         sender.SetActive(true);
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawCube(antCaveRect.position, new Vector3(1, 1, 1));
-    }
+    //private void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawCube(antCaveRect.position, new Vector3(1, 1, 1));
+    //}
 }

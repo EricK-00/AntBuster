@@ -16,15 +16,17 @@ public class UIManager : MonoBehaviour
             return instance; } 
     }
 
-    private GameObject uiCanvas;
+    private GameObject uiCanvasGO;
     private TMP_Text desc;
+    private GameObject gameOver;
 
     private TargetController targetController;
 
     private void Awake()
     {
-        uiCanvas = Functions.GetRootGameObject(Functions.NAME_UICANVAS);
-        desc = uiCanvas.FindChildGameObject(Functions.NAME_UI_DESC).GetComponent<TMP_Text>();
+        uiCanvasGO = Functions.GetRootGameObject(Functions.NAME_UICANVAS);
+        desc = uiCanvasGO.FindChildGameObject(Functions.NAME_UI_DESC).GetComponent<TMP_Text>();
+        gameOver = uiCanvasGO.FindChildGameObject(Functions.NAME_UI_GAMEOVER);
 
         targetController = Functions.GetRootGameObject(Functions.NAME_OBJCANVAS).FindChildGameObject(Functions.NAME_TARGET).GetComponent<TargetController>();
     }
@@ -36,6 +38,11 @@ public class UIManager : MonoBehaviour
 
     public void Target(GameObject target)
     {
-        StartCoroutine(targetController.TargetObject(target));
+        targetController.TargetObject(target);
+    }
+
+    public void GameOver()
+    {
+        gameOver.SetActive(true);
     }
 }

@@ -15,23 +15,24 @@ public class Place : MonoBehaviour
 
     private Button placeButton;
     private GameObject objCanvasGO;
+    private GameObject board;
     private GameObject cannonPrefab;
 
     private void Awake()
     {
         placeButton = GetComponent<Button>();
         objCanvasGO = Functions.GetRootGameObject(Functions.NAME_OBJCANVAS);
+        board = objCanvasGO.FindChildGameObject(Functions.NAME_BOARD);
         cannonPrefab = Functions.PREFAB_CANNON;
     }
 
     public void OnClick()
     {
-        Debug.Log($"{transform.localPosition}");
-
         if (!isAvailable)
             return;
 
-        GameObject cannonInst = Instantiate(cannonPrefab, transform);
+        GameObject cannonInst = Instantiate(cannonPrefab, board.transform);
+        cannonInst.transform.position = transform.position;
 
         Color normalRGB;
         Color highlightedRGB;
@@ -43,6 +44,8 @@ public class Place : MonoBehaviour
         newColors.highlightedColor = highlightedRGB;
         placeButton.colors = newColors;
 
-        isAvailable = false;
+        GameManager.Instance.OnTargetingMode();
+
+        //isAvailable = false;
     }
 }

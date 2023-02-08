@@ -8,10 +8,13 @@ public class Board : MonoBehaviour
     public GameObject availablePlace;
     public GameObject blockedPlace;
 
-    public RectTransform standardRect;
-    public GameObject goParent;
+    private RectTransform boardRect;
+    private GameObject places;
 
-    int[,] board = new int[20, 25]
+    private const int MAX_ROW = 20;
+    private const int MAX_COLUMN = 25;
+
+    private int[,] initBoard = new int[MAX_ROW, MAX_COLUMN]
 {
         { 1,1,1,1,1, 1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0 },
         { 1,1,1,1,1, 1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0 },
@@ -37,14 +40,19 @@ public class Board : MonoBehaviour
 
     private void Awake()
     {
-        for (int i  = 0; i < 20; i++)
+        boardRect = GetComponent<RectTransform>();
+        places = boardRect.gameObject.FindChildGameObject(Functions.NAME_PLACES);
+
+        Transform placeParent = places.transform;
+
+        for (int i = 0; i < MAX_ROW; i++)
         {
-            for (int j = 0; j < 25; j++)
+            for (int j = 0; j < MAX_COLUMN; j++)
             {
-                GameObject instance = (board[i, j] == 0) ? Instantiate(availablePlace, goParent.transform) : Instantiate(blockedPlace, goParent.transform);
+                GameObject instance = (initBoard[i, j] == 0) ? Instantiate(availablePlace, placeParent) : Instantiate(blockedPlace, placeParent);
                 instance.GetComponent<RectTransform>().localPosition = new Vector2(
-                     (j + 0.5f) * standardRect.rect.width / 25 - standardRect.rect.width / 2,
-                    standardRect.rect.height / 2 - (i + 0.5f) * standardRect.rect.height / 20 + standardRect.localPosition.y);
+                    (j + 0.5f) * boardRect.rect.width / MAX_COLUMN - boardRect.rect.width / 2,
+                    boardRect.rect.height / 2 - (i + 1f) * boardRect.rect.height / MAX_ROW + boardRect.position.y);
             }
         }
     }
