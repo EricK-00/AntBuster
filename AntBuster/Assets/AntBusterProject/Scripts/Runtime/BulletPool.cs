@@ -47,8 +47,6 @@ public class BulletPool : MonoBehaviour
         bullet.transform.position = position;
         bullet.transform.rotation = rotation;
         bullet.SetActive(true);
-
-        bullet.name = $"{bullet.name}+{bullet.name}";
     }
 
     public void DisableBullet(GameObject bullet)

@@ -16,27 +16,9 @@ public class Bullet : MonoBehaviour
 
     private void OnEnable()
     {
-        StartCoroutine(Setup());
-        StartCoroutine(DisableThis());
-    }
-
-    private void OnDisable()
-    {
-
-    }
-
-    private void Start()
-    {
-
-    }
-
-    private IEnumerator Setup()
-    {
-        yield return new WaitForEndOfFrame();
         rb.velocity = Vector2.zero;
         rb.AddForce(transform.up * SPEED);
-
-        yield return null;
+        StartCoroutine(DisableThis());
     }
 
     private IEnumerator DisableThis()
