@@ -4,38 +4,55 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public int Power { get; private set; } = 2;
+    private const float SPEED = 100f;//4 * 100f;
+    private int power = 2;
 
-    private const float SPEED = 100f;
     private Rigidbody2D rb;
-
-    private float maxWidth;
-    private float maxHeight;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
-    private void Start()
+
+    private void OnEnable()
     {
-        rb.AddForce(transform.up * SPEED);
-
-        Debug.Log($"{0 - Screen.width / 2}, {0 + Screen.width / 2}, {0 - Screen.height / 2}, {0 + Screen.height / 2}");
-        Debug.Log($"{transform.position}");
-
-        maxWidth = GameManager.Instance.ObjCanvasWidth;
-        maxHeight= GameManager.Instance.ObjCanvasHeight;
+        StartCoroutine(Setup());
+        StartCoroutine(DisableThis());
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        if ((transform.position.x < 0 - maxWidth / 2) || 
-            (transform.position.x > 0 + maxWidth / 2) ||
-            (transform.position.y < 0 - maxHeight / 2) ||
-            (transform.position.y > 0 + maxHeight / 2))
-        {
-            Destroy(gameObject);
-        }
 
+    }
+
+    private void Start()
+    {
+
+    }
+
+    private IEnumerator Setup()
+    {
+        yield return new WaitForEndOfFrame();
+        rb.velocity = Vector2.zero;
+        rb.AddForce(transform.up * SPEED);
+
+        yield return null;
+    }
+
+    private IEnumerator DisableThis()
+    {
+        yield return new WaitForSeconds(10f);
+        BulletPool.Instance.DisableBullet(gameObject);
+        //Destroy(this);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == Functions.TAG_ENEMY)
+        {
+            collision.gameObject.GetComponent<Ant>().Damaged(power);
+            BulletPool.Instance.DisableBullet(gameObject);
+            //Destroy(this);
+        }
     }
 }

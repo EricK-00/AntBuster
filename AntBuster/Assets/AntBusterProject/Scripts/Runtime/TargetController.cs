@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -8,6 +9,7 @@ public class TargetController : MonoBehaviour
 {
     public AnimationCurve curve;
 
+    private Ant targetObject;
     private GameObject ObjCanvas;
     private Image image;
     private Color color;
@@ -27,6 +29,15 @@ public class TargetController : MonoBehaviour
 
     private IEnumerator TargetObjectCoroutine(GameObject target)
     {
+        if (target.tag != Functions.TAG_ENEMY)
+        {
+            yield return null;
+        }
+
+        targetObject = target.GetComponent<Ant>();
+        targetObject.update.AddListener(UpdateDescUI);
+        targetObject.die.AddListener(UntargetObject);
+
         image.color = color;
         Vector2 startPos = transform.position;
         float t = 0f;
@@ -36,24 +47,12 @@ public class TargetController : MonoBehaviour
         {
             transform.position = Vector2.Lerp(startPos, target.transform.position, curve.Evaluate(t));
 
-            Debug.Log($"{transform.position} -> {target.transform.position}");
-
             t += 0.05f;
             yield return new WaitForSeconds(0.05f);
         }
 
         transform.position = target.transform.position;
         transform.SetParent(target.transform);
-    }
-
-    private void OnDisable()
-    {
-        //transform.parent = ObjCanvas.transform;
-        SetInvisible();
-        if (currentCoroutine != null)
-        {
-            StopCoroutine(currentCoroutine);
-        }
     }
 
     public void TargetObject(GameObject target)
@@ -63,6 +62,21 @@ public class TargetController : MonoBehaviour
             StopCoroutine(currentCoroutine);
         }
         currentCoroutine = StartCoroutine(TargetObjectCoroutine(target));
+    }
+
+    private void UpdateDescUI(Ant target)
+    {
+        UIManager.Instance.PrintDesc(target.Description);
+    }
+
+    private void UntargetObject()
+    {
+        if (currentCoroutine != null)
+        {
+            StopCoroutine(currentCoroutine);
+        }
+        transform.SetParent(ObjCanvas.transform);
+        SetInvisible();
     }
 
     private void SetInvisible()

@@ -52,7 +52,7 @@ public class Board : MonoBehaviour
                 GameObject instance = (initBoard[i, j] == 0) ? Instantiate(availablePlace, placeParent) : Instantiate(blockedPlace, placeParent);
                 instance.GetComponent<RectTransform>().localPosition = new Vector2(
                     (j + 0.5f) * boardRect.rect.width / MAX_COLUMN - boardRect.rect.width / 2,
-                    boardRect.rect.height / 2 - (i + 1f) * boardRect.rect.height / MAX_ROW + boardRect.position.y);
+                    boardRect.rect.height / 2 - (i + 0.5f) * boardRect.rect.height / MAX_ROW + boardRect.position.y);
             }
         }
     }

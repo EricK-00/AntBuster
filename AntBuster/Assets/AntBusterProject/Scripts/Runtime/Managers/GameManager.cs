@@ -71,13 +71,13 @@ public class GameManager : MonoBehaviour
     public void OnPlacingMode()
     {
         places.SetActive(true);
-        Cursor.SetCursor(cursorTexture, Vector2.zero, CursorMode.ForceSoftware);
+        Cursor.SetCursor(cursorTexture, Vector2.zero, CursorMode.Auto);
     }
 
     public void OnTargetingMode()
     {
         places.SetActive(false);
-        Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
+        Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto);
     }
 
     public void GameOver()
@@ -94,8 +94,5 @@ public class GameManager : MonoBehaviour
         places = board.FindChildGameObject(Functions.NAME_PLACES);
 
         cursorTexture = cursorSprite.ConvertToTexture2D(FilterMode.Bilinear).SetPixelsAlpha(0.5f);
-
-        ObjCanvasWidth = objCanvasGO.GetComponent<RectTransform>().rect.width;
-        ObjCanvasHeight = objCanvasGO.GetComponent<RectTransform>().rect.height;
     }
 }

@@ -5,9 +5,6 @@ using UnityEngine;
 
 public class Cannon : MonoBehaviour
 {
-    private GameObject objCanvasGO;
-    private GameObject bulletPool;
-    private GameObject bulletPrefab;
 
     private CircleCollider2D cannonCollider;
     private GameObject range;
@@ -15,7 +12,7 @@ public class Cannon : MonoBehaviour
 
     private string cannonName = "Cannon";
     private int attackRange = 100;
-    private float attackFrequency = 1f;
+    private float attackFrequency = 0.33f;
     private int bulletPower;
     private float bulletSpeed;
 
@@ -25,15 +22,13 @@ public class Cannon : MonoBehaviour
 
     private void Awake()
     {
-        objCanvasGO = Functions.GetRootGameObject(Functions.NAME_OBJCANVAS);
-        bulletPool = objCanvasGO.FindChildGameObject(Functions.NAME_BULLETPOOL);
-        bulletPrefab = Functions.PREFAB_BULLET;
-
         cannonCollider = GetComponent<CircleCollider2D>();
         range = transform.parent.gameObject.FindChildGameObject(Functions.NAME_CANNON_RANGE);
         rangeRect = range.GetComponent<RectTransform>();
 
-        UpgradeCannon();
+        attackTimer = attackFrequency;
+
+        SetupCannon();
     }
 
     // Update is called once per frame
@@ -56,12 +51,14 @@ public class Cannon : MonoBehaviour
 
     private void ShotBullet()
     {
-        GameObject bulletInst = Instantiate(bulletPrefab, bulletPool.transform);
-        bulletInst.transform.position = transform.position;
-        bulletInst.transform.rotation = transform.rotation;
+        BulletPool.Instance.EnableBullet(transform.position, transform.rotation);
+        //GameObject bullet = Instantiate(Functions.PREFAB_BULLET, Functions.GetRootGameObject(Functions.NAME_OBJCANVAS).transform);
+        //bullet.transform.position = transform.position;
+        //bullet.transform.rotation = transform.rotation;
+        //Debug.Log($"rot: {transform.rotation}");
     }
 
-    private void UpgradeCannon()
+    private void SetupCannon()
     {
         cannonCollider.radius = attackRange * 2;
         rangeRect.sizeDelta = new Vector2(cannonCollider.radius * 2, cannonCollider.radius * 2);//Render Range

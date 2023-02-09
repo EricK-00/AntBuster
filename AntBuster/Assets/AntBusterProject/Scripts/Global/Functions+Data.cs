@@ -18,10 +18,10 @@ public static partial class Functions
     public const string NAME_TARGET = "Target";
     public const string NAME_ANTCAVE = "AntCave";
     public const string NAME_CAKE = "Cake";
-    public const string NAME_BULLETPOOL = "BulletPool";
 
     public const string NAME_GAMEMANAGER = "GameManager";
     public const string NAME_UIMANAGER = "UIManager";
+    public const string NAME_BULLETPOOL = "BulletPool";
     
     public const string NAME_UICANVAS = "UICanvas";
     public const string NAME_UI_GAMEOVER = "GameOver";

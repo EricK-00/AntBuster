@@ -2,7 +2,9 @@ using Mono.Cecil;
 using Unity.VisualScripting;
 using UnityEditor.U2D.Sprites;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
 
 interface ITargetable
 {
@@ -21,16 +23,16 @@ public class Ant : MonoBehaviour, ITargetable
     private Image EnergeImage;
     private GameObject antCake;
 
+    public UnityEvent<Ant> update = new UnityEvent<Ant>();
+    public UnityEvent die = new UnityEvent();
+
     private int level = 1;
     private int maxEnerge = 10;
     private int currentEnerge = 10;
-
-    private float t = 0;
-
     private float speed = 0.12f;
 
+    private float t = 0;
     private bool isIncreased = true;
-
     private bool isCake = false;
 
     private void Awake()
@@ -41,6 +43,8 @@ public class Ant : MonoBehaviour, ITargetable
 
         EnergeImage = gameObject.FindChildGameObject(Functions.NAME_ANT_HP).GetComponent<Image>();
         antCake = gameObject.FindChildGameObject(Functions.NAME_ANT_CAKE);
+
+        RewriteDescription();
     }
 
     private void OnEnable()
@@ -77,9 +81,8 @@ public class Ant : MonoBehaviour, ITargetable
 
     public void OnTarget()
     {
-        Description = $"Level {level}\n\nEnerge: {currentEnerge}/{maxEnerge}\nSpeed: {speed * 10}inch/sec";
-        UIManager.Instance.PrintDesc(Description);
         UIManager.Instance.Target(gameObject);
+        UIManager.Instance.PrintDesc(Description);
     }
 
     public void Damaged(int damage)
@@ -89,6 +92,8 @@ public class Ant : MonoBehaviour, ITargetable
 
         currentEnerge -= damage;
         UpdateHPImage();
+        RewriteDescription();
+        update.Invoke(this);
         if (currentEnerge <= 0)
         {
             if (isCake)
@@ -105,6 +110,9 @@ public class Ant : MonoBehaviour, ITargetable
 
     public void Die()
     {
+        die.Invoke();
+        update.RemoveAllListeners();
+        die.RemoveAllListeners();
         transform.parent.GetComponent<AntGenerator>().Respone(gameObject);
         gameObject.SetActive(false);
     }
@@ -120,17 +128,13 @@ public class Ant : MonoBehaviour, ITargetable
         antCake.SetActive(false);
         isCake = false;
     }
+    private void RewriteDescription()
+    {
+        Description = $"Level {level}\n\nEnerge: {currentEnerge}/{maxEnerge}\nSpeed: {speed}inch/sec";
+    }
 
     private void UpdateHPImage()
     {
         EnergeImage.fillAmount = (float)currentEnerge / maxEnerge;
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.tag == Functions.TAG_BULLET)
-        {
-            Damaged(collision.gameObject.GetComponent<Bullet>().Power);
-        }
     }
 }
